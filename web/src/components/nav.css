@@ -1,0 +1,24 @@
+ .navbar{
+   display: flex;
+   flex-direction: row;
+   height: 100%;
+   padding-left:  20px;
+   padding-right: 20px; 
+   background-color: #232323;
+   
+   
+ }
+ .navbar #text{
+   display: flex;
+   flex-direction: row;
+   flex: 40%;
+   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+   
+ }
+ .navbar #icon{
+   display: flex;
+   justify-content: flex-end;
+   flex: 60%;
+   ;
+  
+ }
