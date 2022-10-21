@@ -9,7 +9,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { baseURL } from "./request";
+import { baseURL } from "../components/request";
 import Modal from "@mui/material/Modal";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 const theme = createTheme({
@@ -25,18 +25,23 @@ const AddUser = () => {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [emailError, setEmailError] = React.useState(false);
+  const [age, setAge] = React.useState();
+  const [ageError, setAgeError] = React.useState(false);
+  const [cell, setCell] = React.useState("");
+  const [name, setName] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    sendData(data);
+    sendData();
   };
 
-  const sendData = (data) => {
+  const sendData = () => {
     let obj = {
-      name: data.get("name"),
-      age: data.get("age"),
-      cell: data.get("cell"),
-      email: data.get("email"),
+      name: name,
+      age: age,
+      cell: cell,
+      email: email,
     };
     axios
       .post(`${baseURL}/addUser`, obj)
@@ -50,12 +55,26 @@ const AddUser = () => {
         console.log(res);
       })
       .catch((e) => {
-        setMessage("Email already registered!");
+        setMessage("User already exists!");
         handleOpen();
         console.log(e);
       });
   };
 
+  const validateEmail = () => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      setEmailError(false);
+    } else {
+      setEmailError(true);
+    }
+  };
+  const validateAge = () => {
+    if (age >= 18 && age <= 60) {
+      setAgeError(false);
+    } else {
+      setAgeError(true);
+    }
+  };
   const handleOpen = () => setOpen(true);
   return (
     <ThemeProvider theme={theme}>
@@ -107,6 +126,8 @@ const AddUser = () => {
                 <TextField
                   autoComplete="given-name"
                   name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   fullWidth
                   id="name"
@@ -116,6 +137,12 @@ const AddUser = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={() => validateEmail()}
+                  onKeyUp={() => validateEmail()}
+                  error={emailError}
+                  helperText={emailError ? "Enter a valid email" : null}
                   required
                   fullWidth
                   id="email"
@@ -126,6 +153,8 @@ const AddUser = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  value={cell}
+                  onChange={(e) => setCell(e.target.value)}
                   required
                   fullWidth
                   id="cell"
@@ -136,6 +165,12 @@ const AddUser = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  onKeyDown={() => validateAge()}
+                  onKeyUp={() => validateAge()}
+                  error={ageError}
+                  helperText={ageError ? "Age must be 18-60 years old." : null}
                   required
                   fullWidth
                   id="age"
@@ -146,6 +181,7 @@ const AddUser = () => {
               </Grid>
             </Grid>
             <Button
+              disabled={emailError || ageError ? true : false}
               type="submit"
               fullWidth
               variant="contained"

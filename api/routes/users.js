@@ -29,10 +29,17 @@ router.post("/addUser", (req, res) => {
       res.status(500).json({ error: err });
     });
 });
-router.get("/getUsers", (req, res) => {
-  user.find({}).exec((err, data) => {
-    if (err) throw err;
-    res.send(data);
-  });
+router.get("/getUsers/:search", (req, res) => {
+  if (req.params.search === "All") {
+    user.find({}).exec((err, data) => {
+      if (err) throw err;
+      res.send(data);
+    });
+  } else {
+    user.find({ name: req.params.search }).exec((err, data) => {
+      if (err) throw err;
+      res.send(data);
+    });
+  }
 });
 module.exports = router;

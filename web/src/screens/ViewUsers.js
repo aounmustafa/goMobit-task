@@ -7,35 +7,36 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
-import { baseURL } from "./request";
+import { baseURL } from "../components/request";
 
 const ViewUsers = () => {
   const [selected, setSelected] = React.useState("All");
   const [users, setUsers] = React.useState([]);
-  const [filterArr, setFilterArr] = React.useState([]);
+  const [options, setOptions] = React.useState([]);
 
-  const filterTable = (val) => {
-    if (val !== "All") {
-      let arr = users.filter((l, i) => {
-        return l.name === val;
+  const sendSearch = (selected) => {
+    axios
+      .get(`${baseURL}/getUsers/${selected}`)
+      .then((res) => {
+        setUsers(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
       });
-      setFilterArr(arr);
-    } else {
-      setFilterArr(users);
-    }
   };
 
   React.useEffect(() => {
     axios
-      .get(`${baseURL}/getUsers`)
+      .get(`${baseURL}/getUsers/${selected}`)
       .then((res) => {
         setUsers(res.data);
-        setFilterArr(res.data);
+        setOptions(res.data);
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
+
   const handleChange = (user) => {
     setSelected(user);
   };
@@ -66,12 +67,12 @@ const ViewUsers = () => {
             }}
           >
             <option value="All">All</option>
-            {users.map((l, i) => (
+            {options.map((l, i) => (
               <option value={l.name}>{l.name}</option>
             ))}
           </select>
           <button
-            onClick={() => filterTable(selected)}
+            onClick={() => sendSearch(selected)}
             style={{
               borderRadius: 10,
               width: "10%",
@@ -89,15 +90,15 @@ const ViewUsers = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Email</TableCell>
-              <TableCell align="right">Cell No</TableCell>
-              <TableCell align="right">Created at</TableCell>
-              <TableCell align="right">Is Deleted</TableCell>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Email</TableCell>
+              <TableCell align="left">Cell No</TableCell>
+              <TableCell align="left">Created at</TableCell>
+              <TableCell align="left">Is Deleted</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filterArr.map((row) => (
+            {users.map((row) => (
               <TableRow
                 key={row._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -105,11 +106,13 @@ const ViewUsers = () => {
                 <TableCell component="th" scope="row">
                   {row._id}
                 </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.cell}</TableCell>
-                <TableCell align="right">{row.created}</TableCell>
-                <TableCell align="right">{row.deleted}</TableCell>
+                <TableCell align="left">{row.name}</TableCell>
+                <TableCell align="left">{row.email}</TableCell>
+                <TableCell align="left">{row.cell}</TableCell>
+                <TableCell align="left">{row.created}</TableCell>
+                <TableCell align="left">
+                  {row.deleted ? "True" : "False"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

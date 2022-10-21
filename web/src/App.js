@@ -2,9 +2,9 @@ import "./App.css";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AddUser from "./components/AddUser";
+import AddUser from "./screens/AddUser";
 import Layout from "./components/Layout";
-import ViewUsers from "./components/ViewUsers";
+import ViewUsers from "./screens/ViewUsers";
 
 const App = () => {
   return (
