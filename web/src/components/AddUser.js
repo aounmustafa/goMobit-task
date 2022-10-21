@@ -10,6 +10,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseURL } from "./request";
+import Modal from "@mui/material/Modal";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 const theme = createTheme({
   palette: {
@@ -22,25 +23,70 @@ const theme = createTheme({
 
 const AddUser = () => {
   const navigate = useNavigate();
-
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("here");
     const data = new FormData(event.currentTarget);
-
     sendData(data);
   };
 
   const sendData = (data) => {
-    // console.log(data.get("title"));
-    axios.post(`${baseURL}/product/upload`, data).then((res) => {
-      console.log(res);
-    });
+    let obj = {
+      name: data.get("name"),
+      age: data.get("age"),
+      cell: data.get("cell"),
+      email: data.get("email"),
+    };
+    axios
+      .post(`${baseURL}/addUser`, obj)
+      .then((res) => {
+        setMessage("User added successfully!");
+        handleOpen();
+        setTimeout(function () {
+          navigate("/viewUsers");
+        }, 1200);
+
+        console.log(res);
+      })
+      .catch((e) => {
+        setMessage("Email already registered!");
+        handleOpen();
+        console.log(e);
+      });
   };
 
+  const handleOpen = () => setOpen(true);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
+        <Modal
+          open={open}
+          onBackdropClick={() => setOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              backgroundColor: "white",
+              border: "1px solid white",
+              boxShadow: 20,
+              borderRadius: 2,
+
+              p: 4,
+            }}
+          >
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              {message}
+            </Typography>
+          </Box>
+        </Modal>
+
         <CssBaseline />
         <Box
           sx={{
@@ -82,10 +128,10 @@ const AddUser = () => {
                 <TextField
                   required
                   fullWidth
-                  id="phone"
+                  id="cell"
                   label="Cell Number"
-                  name="phone"
-                  autoComplete="phone"
+                  name="cell"
+                  autoComplete="cell"
                 />
               </Grid>
               <Grid item xs={12}>
